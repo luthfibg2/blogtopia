@@ -1,0 +1,52 @@
+@import 'tailwindcss';
+@import "flowbite/src/themes/default";
+
+@plugin "flowbite/plugin";
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+@source "../views";
+@source "../node_modules/flowbite";
+
+@theme {
+    --font-sans: 'Poppins', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+
+    /* primary colors */
+    --color-steel-50: #eaf2f8;
+    --color-steel-100: #dce9f3;
+    --color-steel-200: #b8d4e6;
+    --color-steel-300: #94bfd9;
+    --color-steel-400: #70aacb;
+    --color-steel-500: #4682B4; /* base */
+    --color-steel-600: #3e749f;
+    --color-steel-700: #335f83;
+    --color-steel-800: #274a66;
+    --color-steel-900: #1c354a;
+
+    /* dark-mode layout colors */
+    --color-night-50: #1e1e1e;
+    --color-night-100: #252526;
+    --color-night-200: #2d2d30;
+    --color-night-300: #333337;
+    --color-night-400: #3f3f46;
+    --color-night-500: #444444; /* base */
+    --color-night-600: #4b4b4b;
+    --color-night-700: #515151;
+    --color-night-800: #5a5a5a;
+    --color-night-900: #646464;
+    
+    /* light-mode layout colors */
+    --color-day-50: #f9fafb;
+    --color-day-100: #f3f4f6;
+    --color-day-200: #e5e7eb;
+    --color-day-300: #d1d5db;
+    --color-day-400: #9ca3af;
+    --color-day-500: #6b7280; /* base */
+    --color-day-600: #4b5563;
+    --color-day-700: #374151;
+    --color-day-800: #1f2937;
+    --color-day-900: #111827;
+}
