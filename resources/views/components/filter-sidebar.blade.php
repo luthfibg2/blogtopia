@@ -1,4 +1,4 @@
-<aside id="filter-sidebar" class="top-0 right-0 z-40 w-38 h-full shrink-0 transition-transform translate-x-full sm:translate-x-0" aria-label="Sidebar">
+<aside id="filter-sidebar" class="fixed top-0 right-0 z-40 w-38 pt-12 h-full shrink-0 transition-transform translate-x-full sm:translate-x-0" aria-label="Sidebar">
   <div class="overflow-y-auto py-5 px-4 h-full bg-white border-l border-gray-200 dark:bg-night-300 dark:border-gray-700">
     
     {{-- Sorting Section --}}

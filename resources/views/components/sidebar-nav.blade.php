@@ -1,6 +1,6 @@
 @props(['currentCategory' => 'all', 'currentType' => 'latest'])
 
-<aside id="default-sidebar" class="top-0 left-0 z-40 md:w-20 h-full shrink-0 transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidenav">
+<aside id="default-sidebar" class="fixed top-0 left-0 z-40 pt-12 md:w-20 h-full shrink-0 transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidenav">
    <div class="overflow-y-auto py-5 px-3 h-full bg-white border-r border-gray-200 dark:bg-night-300 dark:border-gray-700">
        <ul class="space-y-2">
            <x-sidebar-link 
