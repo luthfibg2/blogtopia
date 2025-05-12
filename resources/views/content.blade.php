@@ -21,16 +21,47 @@
             </div>
             <div class="flex flex-4/5 flex-col items-center justify-center px-5">
                 <div class="grid gap-5 lg:grid-cols-3">
-                    @forelse($contents as $content)
-                        <x-post-card :content="$content" :type="$currentType" />
-                    @empty
-                        <div class="col-span-full text-center p-6 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-night-300 dark:border-gray-500">
-                            <h2 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-day-400">
-                                Tidak Ada Konten
-                            </h2>
-                            <x-post-card :type="$currentType"/>
-                        </div>
-                    @endforelse
+                    @if ($currentCategory === 'private')
+                        @forelse($myContents as $content)
+                            <x-post-card 
+                                :content="$content" 
+                                :category="$currentCategory" 
+                                :type="$currentType" 
+                                :slug="$content->slug ?? ''" 
+                            />
+                        @empty
+                            <div class="col-span-full text-center p-6 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-night-300 dark:border-gray-500">
+                                <h2 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-day-400">
+                                    Tidak Ada Konten
+                                </h2>
+                                <!-- Panggil post-card tanpa content untuk empty state -->
+                                <x-post-card 
+                                    :category="$currentCategory" 
+                                    :type="$currentType"
+                                />
+                            </div>
+                        @endforelse
+                    @elseif ($currentCategory === 'all')
+                        @forelse($contents as $content)
+                            <x-post-card 
+                                :content="$content" 
+                                :category="$currentCategory" 
+                                :type="$currentType" 
+                                :slug="$content->slug ?? ''" 
+                            />
+                        @empty
+                            <div class="col-span-full text-center p-6 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-night-300 dark:border-gray-500">
+                                <h2 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-day-400">
+                                    Tidak Ada Konten
+                                </h2>
+                                <!-- Panggil post-card tanpa content untuk empty state -->
+                                <x-post-card 
+                                    :category="$currentCategory" 
+                                    :type="$currentType"
+                                />
+                            </div>
+                        @endforelse
+                    @endif
                 </div>
             </div>
         </div>

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Short extends Model
@@ -27,5 +28,20 @@ class Short extends Model
     public function genre(): BelongsTo
     {
         return $this->belongsTo(Genre::class);
+    }
+
+    public function scopeFilterShort(Builder $query, array $filters): void
+    {
+        $query->when(
+            $filters['search'] ?? false,
+            fn ($query, $search) =>
+            $query->where('title', 'like', "%{$search}%")
+        );
+
+        $query->when(
+            $filters['genre'] ?? false,
+            fn ($query, $genre) =>
+            $query->whereHas('genre', fn($query) => $query->where('slug', $genre))
+        );
     }
 }

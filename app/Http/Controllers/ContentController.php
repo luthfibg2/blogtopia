@@ -17,10 +17,75 @@ use Illuminate\Support\Facades\Log;
 
 class ContentController extends Controller
 {
-    public function index()
+    /**
+     * Display content based on category and type
+     */
+    public function index($category, $type)
     {
-        return view();
+        $contents = Short::all();
+        $my_contents = Short::where('author_id', Auth::id())->get();
+
+        // Validasi kategori
+        if (!in_array($category, ['all', 'private', 'favorite'])) {
+            abort(404);
+        }
+        
+        // Validasi tipe
+        if (!in_array($type, ['latest', 'flash', 'short', 'series', 'lyric', 'mech', 'refs'])) {
+            abort(404);
+        }
+        
+        // Validasi kombinasi kategori dan tipe
+        if ($category === 'favorite' && in_array($type, ['latest', 'flash', 'refs'])) {
+            // abort(404, 'Kombinasi kategori dan tipe tidak tersedia');
+            return redirect()->route('content.type', ['category' => 'favorite', 'type' => 'short']);
+        }
+
+        // Ambil konten berdasarkan tipe
+        switch ($type) {
+            case 'latest':
+                // Mengambil data terbaru dari semua model dan menggabungkannya
+                $contents = collect()
+                    ->merge(Short::filterShort(request(['search', 'genre']))->get())
+                    ->merge(Flash::latest()->get())
+                    ->merge(Series::latest()->get())
+                    ->merge(Lyric::latest()->get())
+                    ->merge(Mech::latest()->get())
+                    ->merge(Refs::latest()->get())
+                    ->sortByDesc('created_at'); // Urutkan berdasarkan created_at terbaru
+                break;
+            case 'short':
+                $contents = Short::filterShort(request(['search', 'genre']))->latest()->get();
+                break;
+            case 'flash':
+                $contents = Flash::all();
+                break;
+            case 'series':
+                $contents = Series::all();
+                break;
+            case 'lyric':
+                $contents = Lyric::all();
+                break;
+            case 'mech':
+                $contents = Mech::all();
+                break;
+            case 'refs':
+                $contents = Refs::all();
+                break;
+            // Tambahkan case lain untuk tipe lainnya
+            default:
+                $contents = collect(); // Koleksi kosong
+        }
+        
+        // Load view dengan data yang sesuai
+        return view('content', [
+            'currentCategory' => $category,
+            'currentType' => $type,
+            'contents' => $contents,
+            'myContents' => $my_contents,
+        ]);
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -59,58 +124,21 @@ class ContentController extends Controller
     /**
      * Display content based on category and type
      */
-    public function show($category, $type)
+    public function show($category, $type, $slug)
     {
-        $contents = Short::all();
-        $my_contents = Short::where('author_id', Auth::id())->get();
-
-        // Validasi kategori
-        if (!in_array($category, ['all', 'private', 'favorite'])) {
+        // Validasi tipe konten
+        if (!in_array($type, ['short', 'flash', 'series', 'lyric', 'mech', 'refs'])) {
             abort(404);
         }
-        
-        // Validasi tipe
-        if (!in_array($type, ['latest', 'flash', 'short', 'series', 'lyric', 'mech', 'refs'])) {
-            abort(404);
-        }
-        
-        // Validasi kombinasi kategori dan tipe
-        if ($category === 'favorite' && in_array($type, ['latest', 'flash', 'refs'])) {
-            // abort(404, 'Kombinasi kategori dan tipe tidak tersedia');
-            return redirect()->route('content.type', ['category' => 'favorite', 'type' => 'short']);
-        }
 
-        // Ambil konten berdasarkan tipe
-        switch ($type) {
-            case 'short':
-                $contents = Short::all();
-                break;
-            case 'flash':
-                $contents = Flash::all();
-                break;
-            case 'series':
-                $contents = Series::all();
-                break;
-            case 'lyric':
-                $contents = Lyric::all();
-                break;
-            case 'mech':
-                $contents = Mech::all();
-                break;
-            case 'refs':
-                $contents = Refs::all();
-                break;
-            // Tambahkan case lain untuk tipe lainnya
-            default:
-                $contents = collect(); // Koleksi kosong
-        }
-        
-        // Load view dengan data yang sesuai
-        return view('content', [
+        // Cari konten berdasarkan slug
+        $model = 'App\\Models\\' . Str::studly($type);
+        $content = $model::where('slug', $slug)->firstOrFail();
+
+        return view('pages.read', [
             'currentCategory' => $category,
             'currentType' => $type,
-            'contents' => $contents,
-            'myContents' => $my_contents,
+            'content' => $content,
         ]);
     }
 

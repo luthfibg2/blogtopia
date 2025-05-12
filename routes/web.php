@@ -13,7 +13,7 @@ Route::post('/signup', [AuthController::class, 'store'])->name('auth.signup');
 
 Route::get('/', [ContentController::class, 'home'])->name('home');
 Route::get('/{category}', [ContentController::class, 'category'])->name('content.index');
-Route::get('/{category}/{type}', [ContentController::class, 'show'])->name('content.type');
+Route::get('/{category}/{type}', [ContentController::class, 'index'])->name('content.type');
 Route::middleware(['auth'])->group(function () {
 
     Route::get('/all', [HomeController::class, 'index'])->name('home');
@@ -21,3 +21,4 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/{category}/{type}/create', [ContentController::class, 'create'])->name('content.create');
     Route::post('/{category}/{type}/post', [ContentController::class, 'store'])->name('content.store');
 });
+Route::get('/{category}/{type}/{slug}', [ContentController::class, 'show'])->name('content.read');

@@ -1,11 +1,8 @@
 <div class="py-4 px-4 mx-auto max-w-screen-xl lg:w-[60%] lg:py-6 lg:px-6">
     <div class="mx-auto max-w-screen-xl sm:text-center">
         <form>
-            @if (request('blogCategory'))
-                <input type="hidden" name="blogCategory" value="{{ request('blogCategory') }}"/>
-            @endif
-            @if (request('author'))
-                <input type="hidden" name="author" value="{{ request('author') }}"/>
+            @if (request('genre'))
+                <input type="hidden" name="genre" value="{{ request('genre') }}"/>
             @endif
             <div class="items-center mx-auto space-y-4 max-w-screen-xl sm:flex sm:space-y-0">
                 <div class="relative w-full">
