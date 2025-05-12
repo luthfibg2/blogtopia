@@ -18,4 +18,6 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/all', [HomeController::class, 'index'])->name('home');
     Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
+    Route::get('/{category}/{type}/create', [ContentController::class, 'create'])->name('content.create');
+    Route::post('/{category}/{type}/post', [ContentController::class, 'store'])->name('content.store');
 });

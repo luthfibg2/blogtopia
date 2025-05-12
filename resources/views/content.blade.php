@@ -6,26 +6,31 @@
         <x-sidebar-nav :currentCategory="$currentCategory" :currentType="$currentType" />
         <div class="flex-grow flex flex-col ml-20 mr-38 pt-12 items-center justify-center">
             <div class="flex flex-1/5 w-full px-5 items-center">
-                <x-breadcrumbs :currentCategory="$currentCategory" :currentType="$currentType" />
+                @auth
+                    <x-breadcrumbs :currentCategory="$currentCategory" :currentType="$currentType" />
+                @endauth
                 <x-searchbar>
                     Cari...
                 </x-searchbar>
-                <x-button2>
-                    <x-hugeicons-plus-sign-circle class="h-6 w-6 text-white"/>
-                    Blog Baru
-                </x-button2>
+                @auth    
+                    <x-button2 href="{{ route('content.create', ['category' => $currentCategory, 'type' => $currentType]) }}">
+                        <x-hugeicons-plus-sign-circle class="h-6 w-6 text-white"/>
+                        Blog Baru
+                    </x-button2>
+                @endauth
             </div>
             <div class="flex flex-4/5 flex-col items-center justify-center px-5">
                 <div class="grid gap-5 lg:grid-cols-3">
-                    <x-post-card></x-post-card>
-                    <x-post-card></x-post-card>
-                    <x-post-card></x-post-card>
-                    <x-post-card></x-post-card>
-                    <x-post-card></x-post-card>
-                    <x-post-card></x-post-card>
-                    <x-post-card></x-post-card>
-                    <x-post-card></x-post-card>
-                    <x-post-card></x-post-card>
+                    @forelse($contents as $content)
+                        <x-post-card :content="$content" :type="$currentType" />
+                    @empty
+                        <div class="col-span-full text-center p-6 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-night-300 dark:border-gray-500">
+                            <h2 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-day-400">
+                                Tidak Ada Konten
+                            </h2>
+                            <x-post-card :type="$currentType"/>
+                        </div>
+                    @endforelse
                 </div>
             </div>
         </div>

@@ -2,21 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Genre;
-use App\Models\Short;
+use App\Models\Series;
 use Illuminate\Http\Request;
 
-class ShortController extends Controller
+class SeriesController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $all_shorts = Short::all();
-        $my_shorts = Short::where('user_id', auth()->user()->id)->get();
-
-        return view('content', compact('all_shorts', 'my_shorts'))->with('currentCategory', 'all')->with('currentType', 'short');
+        //
     }
 
     /**
@@ -24,8 +20,7 @@ class ShortController extends Controller
      */
     public function create()
     {
-        $genres = Genre::all();
-        return view('pages.create-content', compact('genres'));
+        //
     }
 
     /**
@@ -39,7 +34,7 @@ class ShortController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Short $short)
+    public function show(Series $series)
     {
         //
     }
@@ -47,7 +42,7 @@ class ShortController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Short $short)
+    public function edit(Series $series)
     {
         //
     }
@@ -55,7 +50,7 @@ class ShortController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Short $short)
+    public function update(Request $request, Series $series)
     {
         //
     }
@@ -63,7 +58,7 @@ class ShortController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Short $short)
+    public function destroy(Series $series)
     {
         //
     }

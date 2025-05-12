@@ -59,3 +59,34 @@
     -webkit-mask-repeat: no-repeat;
     mask-repeat: no-repeat;
 }
+
+@layer utilities {
+
+    .ql-toolbar {
+        @apply rounded-md mb-5;
+    }
+  .ql-toolbar .ql-picker {
+    @apply text-white;
+  }
+
+  .ql-toolbar .ql-stroke {
+    stroke: rgb(124, 124, 124) !important;
+  }
+
+  .ql-toolbar .ql-fill {
+    fill: white !important;
+  }
+
+  .ql-toolbar .ql-picker-options {
+    @apply bg-night-700 text-white;
+  }
+  .ql-picker-options {
+    background: #2d2d30 !important;
+    border-radius: 12px !important;
+    height:fit-content;
+  }
+
+  span.ql-picker-label::before {
+    @apply text-steel-500;
+  }
+}
