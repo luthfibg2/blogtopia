@@ -16,6 +16,11 @@
             'type' => $actualType,
             'slug' => $content->slug
         ]);
+        $editContent = route('content.edit', [
+            'category' => $category,
+            'type' => $actualType,
+            'slug' => $content->slug
+        ]);
     }
 @endphp
 
@@ -33,30 +38,38 @@
 @else
     @switch($actualType)
         @case('short')
-            <article class="p-6 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-night-100 dark:border-gray-700">
-                <div class="flex justify-between items-center mb-5 text-gray-500">
+            <article class="flex flex-col p-6 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-night-100 dark:border-gray-700">
+                <div class="flex flex-1/10 justify-between items-center mb-5 text-gray-500">
                     <span class="bg-steel-100 text-steel-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded dark:bg-steel-200 dark:text-steel-800">
                         <svg class="mr-1 w-3 h-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"></path></svg>
                         {{ $content->genre->name ?? 'Short' }}
                     </span>
                     <span class="text-sm">{{ $content->created_at->diffForHumans() }}</span>
                 </div>
-                <h2 class="mb-2 text-2xl font-bold tracking-tight text-night-200 dark:text-day-300"><a href="#">{{ $content->title }}</a></h2>
-                <p class="mb-5 font-light text-gray-500 dark:text-gray-400">
+                <h2 class="mb-2 flex-1/10 text-2xl font-bold tracking-tight text-night-200 dark:text-day-300"><a href="#">{{ $content->title }}</a></h2>
+                <div class="flex items-center font-light text-gray-500 flex-6/10 dark:text-gray-400">
                 {!! 
                     Str::of($content->content)
                         ->limit(100)
                         ->pipe(function ($content) {
-                            return '<div class="text-night-200 dark:text-day-300">' . $content . '</div>';
-                        }) 
+                            return '<p class="text-night-200  dark:text-day-300">' . $content . '</p>';
+                        })
                 !!}
-                </p>
-                <div class="flex justify-between mt-5 items-center">
-                    <div class="flex items-center space-x-4">
-                        <img class="w-7 h-7 rounded-full" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/jese-leos.png" alt="Jese Leos avatar" />
-                        <span class="font-medium dark:text-white">
-                            {{ $content->author->name }}
-                        </span>
+                </div>
+                <div class="flex flex-2/10 justify-between mt-5 items-center">
+                    <div class="flex items-center">
+                        @if ($category === 'private')
+                        <a href="{{ $editContent }}" class="btn cursor-pointer">
+                            <div class="w-fit h-fit p-2 rounded-full bg-night-300">
+                                {{ $editIcon }}
+                            </div>
+                        </a>
+                        @else
+                            <img class="w-7 h-7 rounded-full" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/avatars/jese-leos.png" alt="Jese Leos avatar" />
+                            <span class="font-medium ms-4 dark:text-white">
+                                {{ $content->author->name }}
+                            </span>
+                        @endif
                     </div>
                     <a href="{{ $readRoute }}" class="inline-flex items-center font-medium text-steel-600 dark:text-steel-500 hover:underline">
                         Read more

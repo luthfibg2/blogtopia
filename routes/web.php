@@ -17,8 +17,14 @@ Route::get('/{category}/{type}', [ContentController::class, 'index'])->name('con
 Route::middleware(['auth'])->group(function () {
 
     Route::get('/all', [HomeController::class, 'index'])->name('home');
+
     Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
+
     Route::get('/{category}/{type}/create', [ContentController::class, 'create'])->name('content.create');
     Route::post('/{category}/{type}/post', [ContentController::class, 'store'])->name('content.store');
+
+    Route::get('/{category}/{type}/{slug}/edit', [ContentController::class, 'edit'])->name('content.edit');
+    Route::put('/{category}/{type}/{slug}/save-changes', [ContentController::class, 'update'])->name('content.save');
 });
+
 Route::get('/{category}/{type}/{slug}', [ContentController::class, 'show'])->name('content.read');

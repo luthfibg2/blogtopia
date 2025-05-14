@@ -12,6 +12,8 @@ use App\Models\Short;
 use App\Models\Series;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Kreait\Firebase\Factory;
+use Illuminate\Support\Facades\DB;
 use App\Http\Requests\StoreRequest;
 use Illuminate\Support\Facades\Log;
 
@@ -86,7 +88,6 @@ class ContentController extends Controller
         ]);
     }
 
-
     /**
      * Show the form for creating a new resource.
      */
@@ -142,8 +143,68 @@ class ContentController extends Controller
         ]);
     }
 
-    public function store(StoreRequest $request, $category, $type)
+    public function store(Request $request, $category, $type)
     {
+        $validated = null;
+        if ($type === 'flash') {
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'description' => 'required|string|min:10',
+                'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:5000',
+            ]);
+
+            DB::beginTransaction();
+            try {
+                $imageUrl = null;
+
+                if ($request->hasFile('image')) {
+                    // inisiasi firebase storage
+                    $firebaseStorage = (new Factory)->withServiceAccount(config('firebase.credentials'))->createStorage();
+
+                    $bucket = $firebaseStorage->getBucket(config('firebase.bucket'));
+
+                    // generate unique filename
+                    $filename = Str::random(20) . '.' . $request->file('image')->getClientOriginalExtension();
+
+                    // konten file
+                    $fileContents = file_get_contents($request->file('image')->getRealPath());
+
+                    // path di Firebase Storage
+                    $storagePath = 'blogtopia/' . $filename;
+
+                    // upload file ke Firebase Storage
+                    $bucket->upload($fileContents, [
+                        'name' => $storagePath,
+                        'predefinedACL' => 'publicRead',
+                    ]);
+
+                    // dapatkan URL gambar
+                    $expiresAt = new \DateTime('+3 year');
+                    $imageUrl = $bucket->object($storagePath)->signedUrl($expiresAt);
+                }
+
+                $model = new Flash();
+                $model->title = $validated['title'];
+                $model->description = $validated['description'];
+                $model->image_url = $imageUrl;
+                $model->save();
+
+                DB::commit();
+
+                return redirect()->route('content.type', ['category' => $category, 'type' => 'flash'])->with('success', 'Flash berhasil di unggah');
+            } catch (\Exception $e) {
+                DB::rollback();
+                return back()->with('error', 'Terjadi kesalahan saat mengunggah flash: ' . $e->getMessage())->withInput();
+            }
+        } else if ($type === 'short') {
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'read_in_minutes' => 'required|integer',
+                'genre' => 'required|exists:genres,id',
+                'content' => 'required|string|min:10',
+            ]);
+        }
+
         try {
             // generate slug
             $slug = Str::slug($request->title);
@@ -180,6 +241,139 @@ class ContentController extends Controller
         } catch (\Exception $e) {
             Log::error('Error creating short: ' . $e->getMessage());
             return back()->with('error', 'Failed to create short');
+        }
+    }
+
+    /**
+     * Form untuk mengedit data
+    */
+    public function edit($slug, $type)
+    {
+        if ($type === 'flash') {
+            $flash = Flash::findOrFail($slug);
+            return view('pages.edit-content', compact('flash'));
+        }
+    }
+
+    /**
+    * Update data
+    */
+
+    public function update(Request $request, $id, $category, $type) {
+        if ($type === 'flash') {
+            // validasi input
+            $validated = $request->validate([
+                'title' => 'required|string|max:255',
+                'description' => 'required|string|max:255',
+                'image' => 'nullable|image|mimes:jpg,png,jpeg,gif|max:5000'
+            ]);
+
+            DB::beginTransaction();
+
+            try {
+                $model = Flash::findOrFail($id);
+
+                // jika ada gambar baru
+                if($request->hasFile('image')) {
+                    // inisiasi firebase storage
+                    $firebaseStorage = (new Factory)->withServiceAccount(config('firebase.projects.app.credentials'))->createStorage();
+
+                    $bucket = $firebaseStorage->getBucket();
+
+                    // hapus gambar lama jika ada
+                    if ($model->image_url) {
+                        try {
+                            // extract path dari url
+                            $path = parse_url($model->image_url, PHP_URL_PATH);
+                            $path = ltrim($path, '/');
+                            $path = explode('/', $path);
+                            $path = implode('/', array_slice($path, 2)); // Abaikan nama bucket dan 'o'
+
+                            // hapus file lama
+                            $bucket->object($path)->delete();
+                        } catch (\Exception $e) {
+                            // lanjutkan meskipun hapus file lama gagal
+                        }
+                    }
+
+                    // generate unique filename
+                    $filename = Str::random(20) . '.' . $request->file('image')->getClientOriginalExtension();
+
+                    // konten file
+                    $fileContents = file_get_contents($request->file('image')->getRealPath());
+
+                    // path di firebase storage
+                    $storagePath = 'blogtopia/' . $filename;
+
+                    // Upload file ke firebase storage
+                    $bucket->upload($fileContents, [
+                        'name' => $storagePath,
+                        'predefinedAcl' => 'publicRead'
+                    ]);
+
+                    // get image url
+                    $expiresAt = new \DateTime('2028-01-01');
+                    $imageUrl = $bucket->object($storagePath)->signedUrl($expiresAt);
+
+                    // update URL gambar
+                    $model->image_url = $imageUrl;
+                }
+                // update field lainnya
+                $model->title = $validated['title'];
+                $model->description = $validated['description'];
+
+                $model->save();
+
+                DB::commit();
+
+                return redirect()->route('content.type', ['category' => $category, 'type' => 'flash'])->with('success', 'Flash berhasil diperbarui');
+            } catch (\Exception $e) {
+                DB::rollBack();
+                return back()->withErrors('Terjadi kesalahan update: ' . $e->getMessage())->withInput();
+            }
+        }
+    }
+
+    /**
+     * Hapus konten
+     */
+
+    public function destroy($id, $category, $type) {
+        DB::beginTransaction();
+
+        if ($type === 'flash') {
+            try {
+                $model = Flash::findOrFail($id);
+
+                // hapus gambar dari firebase jika ada
+                if($model->image_url) {
+                    try {
+                        // inisiasi firebase storage
+                        $firebaseStorage = (new Factory)->withServiceAccount(config('firebase.credentials'))->createStorage();
+
+                        $bucket = $firebaseStorage->getBucket();
+
+                        // ekstrak path dari url
+                        $path = parse_url($model->image_url, PHP_URL_PATH);
+                        $path = ltrim($path, '/');
+                        $path = explode('/', $path);
+                        $path = implode('/', array_slice($path, 2));
+
+                        // hapus file
+                        $bucket->object($path)->delete();
+                    } catch (\Exception $e) {
+                        // lanjutkan meskipun hapus file gagal
+                    }
+                }
+
+                $model->delete();
+                DB::commit();
+
+                return redirect()->route('content.type', ['category' => $category, 'type' => 'flash'])->with('success', 'Flash berhasil dihapus');
+            } catch (\Exception $e) {
+                DB::rollback();
+                return back()->withErrors('Terjadi kesalahan menghapus: ' . $e->getMessage());
+            }
         }
     }
 }

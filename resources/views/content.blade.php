@@ -15,11 +15,19 @@
                 @auth    
                     <x-button2 href="{{ route('content.create', ['category' => $currentCategory, 'type' => $currentType]) }}">
                         <x-hugeicons-plus-sign-circle class="h-6 w-6 text-white"/>
-                        Blog Baru
+                        @if ($currentType === 'flash')
+                            Buat Flash
+                        @elseif ($currentType === 'lyric')
+                            Buat Lirik
+                        @elseif ($currentType === 'mech')
+                            Buat Mekanik
+                        @else
+                            Buat Artikel
+                        @endif
                     </x-button2>
                 @endauth
             </div>
-            <div class="flex flex-4/5 flex-col items-center justify-center px-5">
+            <div class="flex flex-4/5 flex-col items-center pb-5 justify-center px-5">
                 <div class="grid gap-5 lg:grid-cols-3">
                     @if ($currentCategory === 'private')
                         @forelse($myContents as $content)
@@ -28,7 +36,11 @@
                                 :category="$currentCategory" 
                                 :type="$currentType" 
                                 :slug="$content->slug ?? ''" 
-                            />
+                            >
+                                <x-slot name="editIcon">
+                                    <x-hugeicons-edit-02 class="w-6 h-6 text-steel-500"/>
+                                </x-slot>
+                            </x-post-card>
                         @empty
                             <div class="col-span-full text-center p-6 bg-white rounded-lg border border-gray-200 shadow-md dark:bg-night-300 dark:border-gray-500">
                                 <h2 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-day-400">

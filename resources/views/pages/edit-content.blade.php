@@ -6,6 +6,7 @@
 
 @section('content')
 @props(['category', 'type'])
+    <h1 class="text-center">Edit Flash</h1>
     <div class="py-12 w-full h-fit">
         <div class="w-full h-full mx-auto sm:px-6 lg:px-8">
             <div class="bg-white h-full dark:bg-night-300">
@@ -32,7 +33,9 @@
                         </div>
                         @if ($type == 'flash')    
                             <div class="relative z-0 w-full mb-5 group">
-                                <textarea name="description" id="floating_desc" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required></textarea>
+                                <textarea name="description" id="floating_desc" class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer" placeholder=" " required>
+                                    {{ $flash->description }}
+                                </textarea>
                                 <label for="floating_desc" class="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] left-0 rtl:peer-focus:translate-x-0 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Deskripsi</label>
                             </div>
                             <!-- Image Picker Area -->
@@ -83,7 +86,7 @@
                                 <div class="mb-3 text-gray-200" id="editor" style="font-family: 'Poppins', sans-serif; border-radius: 8px;"></div>
                             </div>
                         @endif
-                        <button role="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" required>Posting</button>
+                        <button role="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" required>Simpan Perubahan</button>
                     </form>
                 </div>
             </div>
